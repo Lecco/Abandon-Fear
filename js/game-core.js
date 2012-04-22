@@ -5,14 +5,6 @@ var playground,
     table;
 
 /**
- * Function to add content to game screen
- */
-function addToPlayground(content)
-{
-  document.getElementById("playground").innerHTML = document.getElementById("playground").innerHTML + content;
-}
-
-/**
  * Constructor for playground variables and functions
  */
 var Playground = function(sizeX, sizeY, fieldSize)
@@ -20,6 +12,14 @@ var Playground = function(sizeX, sizeY, fieldSize)
   this.sizeX = sizeX;
   this.sizeY = sizeY;
   this.fieldSize = fieldSize;
+
+  this.add = function(content){
+      document.getElementById("playground").innerHTML = document.getElementById("playground").innerHTML + content;
+    }
+
+  this.gameOver = function(steps){
+      document.body.innerHTML = "Thanks for playing! You survived " + steps + " steps. <br><a href=''>TRY AGAIN</a>";
+    }
 
   document.body.innerHTML = "<div id='playground'></div>";
   document.getElementById("playground").style.width = (this.sizeX * fieldSize) + "px";
@@ -30,6 +30,46 @@ var Playground = function(sizeX, sizeY, fieldSize)
  * Constructor for characters like heroes and NPC
  */
 var Character = function(name, x, y, picture)
+{
+  this.name = name;
+  this.coordinateX = x;
+  this.coordinateY = y;
+  this.picture = picture;
+  this.steps = 0;
+
+  this.moveLeft = function(){
+      if (this.coordinateX > 1)
+        this.coordinateX--;
+      this.move(this.coordinateX, this.coordinateY);
+    }
+  this.moveUp = function(){
+      if (this.coordinateY > 1)
+        this.coordinateY--;
+      this.move(this.coordinateX, this.coordinateY);
+    }
+  this.moveRight = function(){
+      if (this.coordinateX < playground.sizeX)
+        this.coordinateX++;
+      this.move(this.coordinateX, this.coordinateY);
+    }
+  this.moveDown = function(){
+      if (this.coordinateY < playground.sizeY)
+        this.coordinateY++;
+      this.move(this.coordinateX, this.coordinateY);
+    }
+  this.move = function(x, y){
+      document.getElementById("character_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
+      document.getElementById("character_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
+      this.steps++;
+    }
+  playground.add("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+  this.move(this.coordinateX, this.coordinateY);
+}
+
+/**
+ * Constructor for enemies
+ */
+var Enemy = function(name, x, y, picture)
 {
   this.name = name;
   this.coordinateX = x;
@@ -56,36 +96,32 @@ var Character = function(name, x, y, picture)
         this.coordinateY++;
       this.move(this.coordinateX, this.coordinateY);
     }
-  this.move = function(x, y){
-      document.getElementById("character_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
-      document.getElementById("character_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
-    }
-  addToPlayground("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
-  this.move(this.coordinateX, this.coordinateY);
-}
-
-/**
- * Constructor for enemies
- */
-var Enemy = function(name, x, y, picture)
-{
-  this.name = name;
-  this.coordinateX = x;
-  this.coordinateY = y;
-  this.picture = picture;
-
-  this.initialize = function(){
-      document.getElementById("enemy_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
-      document.getElementById("enemy_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
-    }
-  
-  this.move = function(){
+  this.chaseHero = function(){
       var coefficientX = hero.coordinateX - this.coordinateX;
       var coefficientY = hero.coordinateY - this.coordinateY;
-      window.alert(coefficientX + " " + coefficientY);
+      if (coefficientX == 0)
+        if (coefficientY > 0)
+          this.moveDown();
+        else this.moveUp();
+      else if (coefficientY == 0)
+        if (coefficientX > 0)
+          this.moveRight();
+        else this.moveLeft();
+      else if (coefficientY < 0 && coefficientY < coefficientX)
+        this.moveUp();
+      else if (coefficientY < 0 && coefficientY >= coefficientX)
+        this.moveLeft();
+      else if (coefficientY > 0 && coefficientY < coefficientX)
+        this.moveRight();
+      else if (coefficientY > 0 && coefficientX < coefficientY)
+        this.moveDown();
     }
-  addToPlayground("<div id='enemy_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
-  this.initialize();
+  this.move = function(x, y){
+      document.getElementById("enemy_" + this.name).style.left = ((x - 1) * playground.fieldSize) + "px";
+      document.getElementById("enemy_" + this.name).style.top = ((y - 1) * playground.fieldSize) + "px";
+    }
+  playground.add("<div id='enemy_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+  this.move(this.coordinateX, this.coordinateY);
 }
 
 /**
@@ -101,7 +137,7 @@ var Barrier = function(name, x, y, sizeX, sizeY, picture, movable)
   this.picture = picture;
   this.movable = movable;
 
-  addToPlayground("<div id='barrier_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+  playground.add("<div id='barrier_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
   document.getElementById("barrier_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
   document.getElementById("barrier_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
 }
@@ -130,7 +166,11 @@ function handleKey(e)
       //window.alert("Co to? " + e.keyCode);
       break;
   }
-  enemy.move();
+  enemy.chaseHero();
+  if (hero.coordinateX == enemy.coordinateX && hero.coordinateY == enemy.coordinateY)
+  {
+    playground.gameOver(hero.steps);
+  }
 }
 
 /**
