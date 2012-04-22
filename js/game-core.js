@@ -2,7 +2,8 @@
 var playground,
     hero,
     enemy,
-    table;
+    table,
+    gameConsole;
 
 /**
  * Constructor for playground variables and functions
@@ -18,12 +19,25 @@ var Playground = function(sizeX, sizeY, fieldSize)
     }
 
   this.gameOver = function(steps){
-      document.body.innerHTML = "Thanks for playing! You survived " + steps + " steps. <br><a href=''>TRY AGAIN</a>";
+      document.getElementById("playground").innerHTML = "<a href=''>TRY AGAIN</a>";
+      gameConsole.write("Game over!");
     }
 
-  document.body.innerHTML = "<div id='playground'></div>";
+  document.body.innerHTML = document.body.innerHTML + "<div id='playground'></div>";
   document.getElementById("playground").style.width = (this.sizeX * fieldSize) + "px";
   document.getElementById("playground").style.height = (this.sizeY * fieldSize) + "px";
+}
+
+/**
+ * Game console (there will be (moves of enemies, of main character etc)
+ */
+var GameConsole = function()
+{
+  document.body.innerHTML = document.body.innerHTML + "<div id='game_console'></div>";
+
+  this.write = function(text){
+      document.getElementById("game_console").innerHTML = document.getElementById("game_console").innerHTML + text;
+    }
 }
 
 /**
@@ -41,26 +55,31 @@ var Character = function(name, x, y, picture)
       if (this.coordinateX > 1)
         this.coordinateX--;
       this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("You moved left.<br>");
     }
   this.moveUp = function(){
       if (this.coordinateY > 1)
         this.coordinateY--;
       this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("You moved up.<br>");
     }
   this.moveRight = function(){
       if (this.coordinateX < playground.sizeX)
         this.coordinateX++;
       this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("You moved right.<br>");
     }
   this.moveDown = function(){
       if (this.coordinateY < playground.sizeY)
         this.coordinateY++;
       this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("You moved down.<br>");
     }
   this.move = function(x, y){
       document.getElementById("character_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
       document.getElementById("character_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
       this.steps++;
+      gameConsole.write("This was your " + this.steps + ". move.<br>");
     }
   playground.add("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
   this.move(this.coordinateX, this.coordinateY);
@@ -80,21 +99,25 @@ var Enemy = function(name, x, y, picture)
       if (this.coordinateX > 1)
         this.coordinateX--;
       this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("Enemy " + this.name + " moved left.<br>");
     }
   this.moveUp = function(){
       if (this.coordinateY > 1)
         this.coordinateY--;
       this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("Enemy " + this.name + " moved up.<br>");
     }
   this.moveRight = function(){
       if (this.coordinateX < playground.sizeX)
         this.coordinateX++;
       this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("Enemy " + this.name + " moved right.<br>");
     }
   this.moveDown = function(){
       if (this.coordinateY < playground.sizeY)
         this.coordinateY++;
       this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("Enemy " + this.name + " moved down.<br>");
     }
   this.chaseHero = function(){
       var coefficientX = hero.coordinateX - this.coordinateX;
@@ -147,7 +170,6 @@ var Barrier = function(name, x, y, sizeX, sizeY, picture, movable)
  */
 function handleKey(e)
 {
-  //window.alert("Hrdina " + hero.name + ": x = " + hero.coordinateX + "; y = " + hero.coordinateY);
   switch (e.keyCode)
   {
     case 37:
@@ -180,6 +202,7 @@ function initGame()
 {
   document.onkeydown = handleKey;
   /* game elements */
+  gameConsole = new GameConsole();
   playground = new Playground(8, 8, 30);
   hero = new Character("main", 1, 2, "images/hero.jpg");
   enemy = new Enemy("zombie", 5, 7, "images/zombie.gif");
