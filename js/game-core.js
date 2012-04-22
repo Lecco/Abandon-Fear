@@ -27,7 +27,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
 }
 
 /**
- * Constructor for characters (hero, NPC)
+ * Constructor for characters like heroes and NPC
  */
 var Character = function(name, x, y, picture)
 {
@@ -62,6 +62,30 @@ var Character = function(name, x, y, picture)
     }
   addToPlayground("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
   this.move(this.coordinateX, this.coordinateY);
+}
+
+/**
+ * Constructor for enemies
+ */
+var Enemy = function(name, x, y, picture)
+{
+  this.name = name;
+  this.coordinateX = x;
+  this.coordinateY = y;
+  this.picture = picture;
+
+  this.initialize = function(){
+      document.getElementById("enemy_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
+      document.getElementById("enemy_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
+    }
+  
+  this.move = function(){
+      var coefficientX = hero.coordinateX - this.coordinateX;
+      var coefficientY = hero.coordinateY - this.coordinateY;
+      window.alert(coefficientX + " " + coefficientY);
+    }
+  addToPlayground("<div id='enemy_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+  this.initialize();
 }
 
 /**
@@ -106,6 +130,7 @@ function handleKey(e)
       //window.alert("Co to? " + e.keyCode);
       break;
   }
+  enemy.move();
 }
 
 /**
@@ -117,10 +142,8 @@ function initGame()
   /* game elements */
   playground = new Playground(8, 8, 30);
   hero = new Character("main", 1, 2, "images/hero.jpg");
-  enemy = new Character("zombie", 5, 7, "images/zombie.gif");
+  enemy = new Enemy("zombie", 5, 7, "images/zombie.gif");
   table = new Barrier("table", 3, 3, 1, 1, "images/table.gif", true);
-
-  
 }
 
 window.onload = initGame;
