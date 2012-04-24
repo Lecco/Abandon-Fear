@@ -143,26 +143,34 @@ var Enemy = function(name, x, y, picture)
   this.moveLeft = function(){
       if (this.coordinateX > 1)
         this.coordinateX--;
-      this.move(this.coordinateX, this.coordinateY);
-      gameConsole.write("Enemy " + this.name + " moved left.<br>");
+      if (this.move(this.coordinateX, this.coordinateY))
+        gameConsole.write("Enemy " + this.name + " moved left.<br>");
+      else
+        this.coordinateX++;
     }
   this.moveUp = function(){
       if (this.coordinateY > 1)
         this.coordinateY--;
-      this.move(this.coordinateX, this.coordinateY);
-      gameConsole.write("Enemy " + this.name + " moved up.<br>");
+      if (this.move(this.coordinateX, this.coordinateY))
+        gameConsole.write("Enemy " + this.name + " moved up.<br>");
+      else
+        this.coordinateY++;
     }
   this.moveRight = function(){
       if (this.coordinateX < playground.sizeX)
         this.coordinateX++;
-      this.move(this.coordinateX, this.coordinateY);
-      gameConsole.write("Enemy " + this.name + " moved right.<br>");
+      if (this.move(this.coordinateX, this.coordinateY))
+        gameConsole.write("Enemy " + this.name + " moved right.<br>");
+      else
+        this.coordinateX--;
     }
   this.moveDown = function(){
       if (this.coordinateY < playground.sizeY)
         this.coordinateY++;
-      this.move(this.coordinateX, this.coordinateY);
-      gameConsole.write("Enemy " + this.name + " moved down.<br>");
+      if (this.move(this.coordinateX, this.coordinateY))
+        gameConsole.write("Enemy " + this.name + " moved down.<br>");
+      else
+        this.coordinateY--;
     }
   this.chaseHero = function(){
       var coefficientX = hero.coordinateX - this.coordinateX;
@@ -185,8 +193,11 @@ var Enemy = function(name, x, y, picture)
         this.moveDown();
     }
   this.move = function(x, y){
+      if (playground.getCollision(x, y)) 
+        return false;
       document.getElementById("enemy_" + this.name).style.left = ((x - 1) * playground.fieldSize) + "px";
       document.getElementById("enemy_" + this.name).style.top = ((y - 1) * playground.fieldSize) + "px";
+      return true;
     }
   playground.add("<div id='enemy_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
   this.move(this.coordinateX, this.coordinateY);
