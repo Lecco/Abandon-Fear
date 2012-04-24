@@ -13,9 +13,22 @@ var Playground = function(sizeX, sizeY, fieldSize)
   this.sizeX = sizeX;
   this.sizeY = sizeY;
   this.fieldSize = fieldSize;
+  this.finishX = null;
+  this.finishY = null;
 
   this.add = function(content){
       document.getElementById("playground").innerHTML = document.getElementById("playground").innerHTML + content;
+    }
+
+  this.addFinish = function(x, y){
+      this.finishX = x;
+      this.finishY = y;
+      playground.add("<div id='finish'><img src='images/finish.jpg' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px; top:" + (this.fieldSize * (y - 1)) + "px; left: " + (this.fieldSize * (x - 1)) + "px'></div>");
+    }
+
+  this.victory = function(steps){
+      document.getElementById("playground").innerHTML = "YOU HAVE WON<br>You made " + steps + " steps.";
+      gameConsole.write("VICTORY!!!<br>");
     }
 
   this.gameOver = function(steps){
@@ -191,6 +204,10 @@ function handleKey(e)
   }
   for (var i = 0; i < enemies.length; i++)
   {
+    if (hero.coordinateX == playground.finishX && hero.coordinateY == playground.finishY)
+    {
+      playground.victory(hero.steps);
+    }
     enemies[i].chaseHero();
     if (hero.coordinateX == enemies[i].coordinateX && hero.coordinateY == enemies[i].coordinateY)
     {
@@ -207,6 +224,7 @@ function initGame()
   document.onkeydown = handleKey;
   /* game elements */
   playground = new Playground(8, 8, 30);
+  playground.addFinish(3, 8);
   gameConsole = new GameConsole();
   hero = new Character("main", 3, 1, "images/hero.jpg");
   enemies = new Array(new Enemy("zombie", 1, 1, "images/zombie.gif"), 
