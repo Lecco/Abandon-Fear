@@ -1,7 +1,7 @@
 /* Game variables */
 var playground,
     hero,
-    enemy,
+    enemies,
     table,
     gameConsole;
 
@@ -81,7 +81,7 @@ var Character = function(name, x, y, picture)
       document.getElementById("character_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
       this.steps++;
       //gameConsole.write("This was your " + this.steps + ". move.<br>");
-    }
+      }
   playground.add("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
   this.move(this.coordinateX, this.coordinateY);
 }
@@ -189,10 +189,13 @@ function handleKey(e)
       //window.alert("Co to? " + e.keyCode);
       break;
   }
-  enemy.chaseHero();
-  if (hero.coordinateX == enemy.coordinateX && hero.coordinateY == enemy.coordinateY)
+  for (var i = 0; i < enemies.length; i++)
   {
-    playground.gameOver(hero.steps);
+    enemies[i].chaseHero();
+    if (hero.coordinateX == enemies[i].coordinateX && hero.coordinateY == enemies[i].coordinateY)
+    {
+      playground.gameOver(hero.steps);
+    }
   }
 }
 
@@ -205,8 +208,10 @@ function initGame()
   /* game elements */
   playground = new Playground(8, 8, 30);
   gameConsole = new GameConsole();
-  hero = new Character("main", 1, 2, "images/hero.jpg");
-  enemy = new Enemy("zombie", 5, 7, "images/zombie.gif");
+  hero = new Character("main", 3, 1, "images/hero.jpg");
+  enemies = new Array(new Enemy("zombie", 1, 1, "images/zombie.gif"), 
+                      new Enemy("zombie2", 6, 1, "images/zombie.gif"),
+                      new Enemy("zombie3", 5, 2, "images/zombie.gif"));
   table = new Barrier("table", 3, 3, 1, 1, "images/table.gif", true);
 }
 
