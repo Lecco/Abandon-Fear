@@ -37,7 +37,7 @@ var GameConsole = function()
   document.getElementById("game_console").style.top = (playground.sizeY * playground.fieldSize) + 20 + "px";
 
   this.write = function(text){
-      document.getElementById("game_console").innerHTML = document.getElementById("game_console").innerHTML + text;
+      document.getElementById("game_console").innerHTML = text + document.getElementById("game_console").innerHTML;
     }
 }
 
