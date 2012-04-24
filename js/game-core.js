@@ -24,8 +24,8 @@ var Playground = function(sizeX, sizeY, fieldSize)
     }
 
   document.body.innerHTML = document.body.innerHTML + "<div id='playground'></div>";
-  document.getElementById("playground").style.width = (this.sizeX * fieldSize) + "px";
-  document.getElementById("playground").style.height = (this.sizeY * fieldSize) + "px";
+  document.getElementById("playground").style.width = (this.sizeX * this.fieldSize) + "px";
+  document.getElementById("playground").style.height = (this.sizeY * this.fieldSize) + "px";
 }
 
 /**
@@ -34,6 +34,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
 var GameConsole = function()
 {
   document.body.innerHTML = document.body.innerHTML + "<div id='game_console'></div>";
+  document.getElementById("game_console").style.top = (playground.sizeY * playground.fieldSize) + 20 + "px";
 
   this.write = function(text){
       document.getElementById("game_console").innerHTML = document.getElementById("game_console").innerHTML + text;
@@ -202,8 +203,8 @@ function initGame()
 {
   document.onkeydown = handleKey;
   /* game elements */
-  gameConsole = new GameConsole();
   playground = new Playground(8, 8, 30);
+  gameConsole = new GameConsole();
   hero = new Character("main", 1, 2, "images/hero.jpg");
   enemy = new Enemy("zombie", 5, 7, "images/zombie.gif");
   table = new Barrier("table", 3, 3, 1, 1, "images/table.gif", true);

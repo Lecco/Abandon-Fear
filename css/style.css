@@ -9,3 +9,10 @@ body * {
 #playground {
   background-color:#ffffff;
 }
+
+#game_console {
+  width:400px;
+  height:250px;
+  border:2px solid #AAAAAA;
+  overflow:auto;
+}
