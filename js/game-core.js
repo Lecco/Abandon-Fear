@@ -2,7 +2,7 @@
 var playground,
     hero,
     enemies,
-    table,
+    barriers,
     gameConsole;
 
 /**
@@ -24,6 +24,21 @@ var Playground = function(sizeX, sizeY, fieldSize)
       this.finishX = x;
       this.finishY = y;
       playground.add("<div id='finish'><img src='images/finish.jpg' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px; top:" + (this.fieldSize * (y - 1)) + "px; left: " + (this.fieldSize * (x - 1)) + "px'></div>");
+    }
+
+  this.getCollision = function(x,y){
+      if (barriers == undefined) return false;
+      for (var i = 0; i < barriers.length; i++)
+      {
+        if (barriers[i].movable == false)
+        {
+          for (var hor = 0; hor < barriers[i].sizeX; hor++)
+            for (var ver = 0; ver < barriers[i].sizeY; ver++)
+              if (x == barriers[i].coordinateX + hor && y == barriers[i].coordinateY + ver)
+                return true;
+        }
+      }
+      return false;
     }
 
   this.victory = function(steps){
@@ -64,37 +79,53 @@ var Character = function(name, x, y, picture)
   this.coordinateY = y;
   this.picture = picture;
   this.steps = 0;
+  this.hadMoved = true;
 
   this.moveLeft = function(){
       if (this.coordinateX > 1)
         this.coordinateX--;
-      this.move(this.coordinateX, this.coordinateY);
-      gameConsole.write("You moved left.<br>");
+      if (this.move(this.coordinateX, this.coordinateY))
+        gameConsole.write("You moved left.<br>");
+      else
+        this.coordinateX++;
     }
   this.moveUp = function(){
       if (this.coordinateY > 1)
         this.coordinateY--;
-      this.move(this.coordinateX, this.coordinateY);
-      gameConsole.write("You moved up.<br>");
+      if (this.move(this.coordinateX, this.coordinateY))
+        gameConsole.write("You moved up.<br>");
+      else
+        this.coordinateY++;
     }
   this.moveRight = function(){
       if (this.coordinateX < playground.sizeX)
         this.coordinateX++;
-      this.move(this.coordinateX, this.coordinateY);
-      gameConsole.write("You moved right.<br>");
+      if (this.move(this.coordinateX, this.coordinateY))
+        gameConsole.write("You moved right.<br>");
+      else
+        this.coordinateX--;
     }
   this.moveDown = function(){
       if (this.coordinateY < playground.sizeY)
         this.coordinateY++;
-      this.move(this.coordinateX, this.coordinateY);
-      gameConsole.write("You moved down.<br>");
+      if (this.move(this.coordinateX, this.coordinateY))
+        gameConsole.write("You moved down.<br>");
+      else
+        this.coordinateY--;
     }
   this.move = function(x, y){
+      if (playground.getCollision(x, y)) 
+      {
+        this.hadMoved = false;
+        return false;
+      }
       document.getElementById("character_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
       document.getElementById("character_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
       this.steps++;
+      this.hadMoved = true;
+      return true;
       //gameConsole.write("This was your " + this.steps + ". move.<br>");
-      }
+    }
   playground.add("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
   this.move(this.coordinateX, this.coordinateY);
 }
@@ -202,6 +233,7 @@ function handleKey(e)
       //window.alert("Co to? " + e.keyCode);
       break;
   }
+  if (hero.hadMoved == false) return;
   for (var i = 0; i < enemies.length; i++)
   {
     if (hero.coordinateX == playground.finishX && hero.coordinateY == playground.finishY)
@@ -227,10 +259,10 @@ function initGame()
   playground.addFinish(3, 8);
   gameConsole = new GameConsole();
   hero = new Character("main", 3, 1, "images/hero.jpg");
-  enemies = new Array(new Enemy("zombie", 1, 1, "images/zombie.gif"), 
-                      new Enemy("zombie2", 6, 1, "images/zombie.gif"),
-                      new Enemy("zombie3", 5, 2, "images/zombie.gif"));
-  table = new Barrier("table", 3, 3, 1, 1, "images/table.gif", true);
+  enemies = new Array(new Enemy("zombie_pepa", 1, 2, "images/zombie.gif"), 
+                      new Enemy("zombie_ferda", 8, 1, "images/zombie.gif"),
+                      new Enemy("zombie_neznabohumil", 8, 7, "images/zombie.gif"));
+  barriers = new Array(new Barrier("table", 3, 3, 1, 1, "images/table.gif", false));
 }
 
 window.onload = initGame;
