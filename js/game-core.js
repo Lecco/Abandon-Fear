@@ -20,7 +20,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
 
   this.gameOver = function(steps){
       document.getElementById("playground").innerHTML = "<a href=''>TRY AGAIN</a>";
-      gameConsole.write("Game over!");
+      gameConsole.write("Game over!<br>");
     }
 
   document.body.innerHTML = document.body.innerHTML + "<div id='playground'></div>";
@@ -80,7 +80,7 @@ var Character = function(name, x, y, picture)
       document.getElementById("character_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
       document.getElementById("character_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
       this.steps++;
-      gameConsole.write("This was your " + this.steps + ". move.<br>");
+      //gameConsole.write("This was your " + this.steps + ". move.<br>");
     }
   playground.add("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
   this.move(this.coordinateX, this.coordinateY);
