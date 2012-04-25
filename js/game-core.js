@@ -1,9 +1,9 @@
 /* Game variables */
-var playground,
-    hero,
-    enemies,
-    barriers,
-    gameConsole;
+var playground,      // object representing playing area
+    hero,            // main character
+    enemies,         // array of all enemies
+    barriers,        // array of all barriers
+    gameConsole;     // game console object (game info)
 
 /**
  * Constructor for playground variables and functions
@@ -16,16 +16,25 @@ var Playground = function(sizeX, sizeY, fieldSize)
   this.finishX = null;
   this.finishY = null;
 
+  /**
+   * Adds a new content to the playground
+   */
   this.add = function(content){
       document.getElementById("playground").innerHTML = document.getElementById("playground").innerHTML + content;
     }
 
+  /**
+   * Sets position of finish and adds it to playground
+   */
   this.addFinish = function(x, y){
       this.finishX = x;
       this.finishY = y;
       playground.add("<div id='finish'><img src='images/finish.jpg' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px; top:" + (this.fieldSize * (y - 1)) + "px; left: " + (this.fieldSize * (x - 1)) + "px'></div>");
     }
 
+  /**
+   * Returns true if there is any not movable barrier on given coordinates
+   */
   this.getCollision = function(x,y){
       if (barriers == undefined) return false;
       for (var i = 0; i < barriers.length; i++)
@@ -41,11 +50,17 @@ var Playground = function(sizeX, sizeY, fieldSize)
       return false;
     }
 
+  /**
+   * Prints the victory message to console and into the playgropund
+   */
   this.victory = function(steps){
       document.getElementById("playground").innerHTML = "YOU HAVE WON<br>You made " + steps + " steps.";
       gameConsole.write("VICTORY!!!<br>");
     }
 
+  /**
+   * Prints the game over message to console and to the playground
+   */
   this.gameOver = function(steps){
       document.getElementById("playground").innerHTML = "<a href=''>TRY AGAIN</a>";
       gameConsole.write("Game over!<br>");
@@ -64,6 +79,9 @@ var GameConsole = function()
   document.body.innerHTML = document.body.innerHTML + "<div id='game_console'></div>";
   document.getElementById("game_console").style.top = (playground.sizeY * playground.fieldSize) + 20 + "px";
 
+  /**
+   * Writes giver text to the console
+   */
   this.write = function(text){
       document.getElementById("game_console").innerHTML = text + document.getElementById("game_console").innerHTML;
     }
@@ -81,6 +99,9 @@ var Character = function(name, x, y, picture)
   this.steps = 0;
   this.hadMoved = true;
 
+  /**
+   * Moves left (if there isn't any non-movable barrier)
+   */
   this.moveLeft = function(){
       if (this.coordinateX > 1)
         this.coordinateX--;
@@ -89,6 +110,10 @@ var Character = function(name, x, y, picture)
       else
         this.coordinateX++;
     }
+
+  /**
+   * Moves up (if there isn't any non-movable barrier)
+   */
   this.moveUp = function(){
       if (this.coordinateY > 1)
         this.coordinateY--;
@@ -97,6 +122,10 @@ var Character = function(name, x, y, picture)
       else
         this.coordinateY++;
     }
+
+  /**
+   * Moves right (if there isn't any non-movable barrier)
+   */
   this.moveRight = function(){
       if (this.coordinateX < playground.sizeX)
         this.coordinateX++;
@@ -105,6 +134,10 @@ var Character = function(name, x, y, picture)
       else
         this.coordinateX--;
     }
+
+  /**
+   * Moves down (if there isn't any non-movable barrier)
+   */
   this.moveDown = function(){
       if (this.coordinateY < playground.sizeY)
         this.coordinateY++;
@@ -113,9 +146,14 @@ var Character = function(name, x, y, picture)
       else
         this.coordinateY--;
     }
+
+  /**
+   * Moves to given coordinates
+   */
   this.move = function(x, y){
       if (playground.getCollision(x, y)) 
       {
+        // if there is some barrier, we can't move here
         this.hadMoved = false;
         return false;
       }
@@ -126,6 +164,7 @@ var Character = function(name, x, y, picture)
       return true;
       //gameConsole.write("This was your " + this.steps + ". move.<br>");
     }
+
   playground.add("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
   this.move(this.coordinateX, this.coordinateY);
 }
@@ -140,6 +179,9 @@ var Enemy = function(name, x, y, picture)
   this.coordinateY = y;
   this.picture = picture;
 
+  /**
+   * Moves left
+   */
   this.moveLeft = function(){
       if (this.coordinateX > 1)
         this.coordinateX--;
@@ -148,6 +190,10 @@ var Enemy = function(name, x, y, picture)
       else
         this.coordinateX++;
     }
+
+  /**
+   * Moves up
+   */
   this.moveUp = function(){
       if (this.coordinateY > 1)
         this.coordinateY--;
@@ -156,6 +202,10 @@ var Enemy = function(name, x, y, picture)
       else
         this.coordinateY++;
     }
+
+  /**
+   * Moves right
+   */
   this.moveRight = function(){
       if (this.coordinateX < playground.sizeX)
         this.coordinateX++;
@@ -164,6 +214,10 @@ var Enemy = function(name, x, y, picture)
       else
         this.coordinateX--;
     }
+
+  /**
+   * Moves down
+   */
   this.moveDown = function(){
       if (this.coordinateY < playground.sizeY)
         this.coordinateY++;
@@ -172,26 +226,69 @@ var Enemy = function(name, x, y, picture)
       else
         this.coordinateY--;
     }
+
+  /**
+   * Making the decision which direction to choose when chasing main character
+   */
   this.chaseHero = function(){
+      /*
+       * The vector [coefficientX, coefficientY] = [heros coordinates - enemys coordinates]
+       * It's the direction from enemy to main character
+       */
       var coefficientX = hero.coordinateX - this.coordinateX;
       var coefficientY = hero.coordinateY - this.coordinateY;
+
       if (coefficientX == 0)
+        // if coefficientX == 0 it means that both (main character and this enemy) are on the same row
         if (coefficientY > 0)
           this.moveDown();
         else this.moveUp();
       else if (coefficientY == 0)
+        // if coefficientY == 0 that mans that they are on the same line
         if (coefficientX > 0)
           this.moveRight();
         else this.moveLeft();
       else if (coefficientY < 0 && coefficientY < coefficientX)
+        /*
+         * Hero is more "up" than on side
+         *
+         *  H..
+         *  ...
+         *  .E.
+         */
         this.moveUp();
       else if (coefficientY < 0 && coefficientY >= coefficientX)
+        /*
+         * Hero is more left than up
+         * 
+         * H..
+         * ..E
+         * ...
+         */
         this.moveLeft();
       else if (coefficientY > 0 && coefficientY < coefficientX)
+        /*
+         * Hero is more down than right
+         * 
+         * E..
+         * ...
+         * .H.
+         */
         this.moveRight();
       else if (coefficientY > 0 && coefficientX < coefficientY)
+        /*
+         * Hero is more right than down
+         *
+         * E..
+         * ..H
+         * ...
+         */
         this.moveDown();
     }
+
+  /*
+   * If there isn't any collision on given coordinates, then moves enemy to these coordinates
+   */
   this.move = function(x, y){
       if (playground.getCollision(x, y)) 
         return false;
@@ -199,6 +296,7 @@ var Enemy = function(name, x, y, picture)
       document.getElementById("enemy_" + this.name).style.top = ((y - 1) * playground.fieldSize) + "px";
       return true;
     }
+
   playground.add("<div id='enemy_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
   this.move(this.coordinateX, this.coordinateY);
 }
@@ -241,19 +339,26 @@ function handleKey(e)
       hero.moveDown();
       break;
     default:
-      //window.alert("Co to? " + e.keyCode);
+      //window.alert(e.keyCode);
       break;
   }
+
+  // if hero hadn't moved (key was pressed but there might be a barrier) then neither will enemies
   if (hero.hadMoved == false) return;
+
+  // if hero is on coordinates of finish then he won
+  if (hero.coordinateX == playground.finishX && hero.coordinateY == playground.finishY)
+  {
+    playground.victory(hero.steps);
+  }
+  
   for (var i = 0; i < enemies.length; i++)
   {
-    if (hero.coordinateX == playground.finishX && hero.coordinateY == playground.finishY)
-    {
-      playground.victory(hero.steps);
-    }
     enemies[i].chaseHero();
+    
     if (hero.coordinateX == enemies[i].coordinateX && hero.coordinateY == enemies[i].coordinateY)
     {
+      // if any of enemies is on the same coordinates as main character then he lost
       playground.gameOver(hero.steps);
     }
   }
