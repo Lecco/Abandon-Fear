@@ -17,6 +17,15 @@ var Playground = function(sizeX, sizeY, fieldSize)
   this.finishY = null;
 
   /**
+   * Initialize playground - add playground to document and resize it
+   */
+  this.init = function()
+  {
+    document.body.innerHTML = document.body.innerHTML + "<div id='playground'></div>";
+    document.getElementById("playground").style.width = (this.sizeX * this.fieldSize) + "px";
+    document.getElementById("playground").style.height = (this.sizeY * this.fieldSize) + "px";
+  }
+  /**
    * Adds a new content to the playground
    */
   this.add = function(content)
@@ -71,9 +80,6 @@ var Playground = function(sizeX, sizeY, fieldSize)
     gameConsole.write("Game over!<br>");
   }
 
-  document.body.innerHTML = document.body.innerHTML + "<div id='playground'></div>";
-  document.getElementById("playground").style.width = (this.sizeX * this.fieldSize) + "px";
-  document.getElementById("playground").style.height = (this.sizeY * this.fieldSize) + "px";
 }
 
 /**
@@ -81,8 +87,14 @@ var Playground = function(sizeX, sizeY, fieldSize)
  */
 var GameConsole = function()
 {
-  document.body.innerHTML = document.body.innerHTML + "<div id='game_console'></div>";
-  document.getElementById("game_console").style.top = (playground.sizeY * playground.fieldSize) + 20 + "px";
+  /**
+   * Initialize object of game console - add it to document and move it to its position
+   */
+  this.init = function()
+  {
+    document.body.innerHTML = document.body.innerHTML + "<div id='game_console'></div>";
+    document.getElementById("game_console").style.top = (playground.sizeY * playground.fieldSize) + 20 + "px";
+  }
 
   /**
    * Writes giver text to the console
@@ -104,6 +116,15 @@ var Character = function(name, x, y, picture)
   this.picture = picture;
   this.steps = 0;
   this.hadMoved = true;
+
+  /**
+   * Initialize main character - add it top playground and move it to its position
+   */
+  this.init = function()
+  {
+    playground.add("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+    this.move(this.coordinateX, this.coordinateY);
+  }
 
   /**
    * Moves left (if there isn't any non-movable barrier)
@@ -175,9 +196,6 @@ var Character = function(name, x, y, picture)
     return true;
     //gameConsole.write("This was your " + this.steps + ". move.<br>");
   }
-
-  playground.add("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
-  this.move(this.coordinateX, this.coordinateY);
 }
 
 /**
@@ -190,6 +208,14 @@ var Enemy = function(name, x, y, picture)
   this.coordinateY = y;
   this.picture = picture;
 
+  /**
+   * Initialize enemy - add it to playground and move it to its location
+   */
+  this.init = function()
+  {
+    playground.add("<div id='enemy_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+    this.move(this.coordinateX, this.coordinateY);
+  }
   /**
    * Moves left
    */
@@ -314,8 +340,6 @@ var Enemy = function(name, x, y, picture)
     return true;
   }
 
-  playground.add("<div id='enemy_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
-  this.move(this.coordinateX, this.coordinateY);
 }
 
 /**
@@ -331,9 +355,15 @@ var Barrier = function(name, x, y, sizeX, sizeY, picture, movable)
   this.picture = picture;
   this.movable = movable;
 
-  playground.add("<div id='barrier_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
-  document.getElementById("barrier_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
-  document.getElementById("barrier_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
+  /**
+   * Initialize barrier - move it to its location and add it to playground
+   */
+  this.init = function()
+  {
+    playground.add("<div id='barrier_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+    document.getElementById("barrier_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
+    document.getElementById("barrier_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
+  }
 }
 
 /**
@@ -395,14 +425,22 @@ function initGame()
   document.onkeydown = handleKey;
   /* game elements */
   playground = new Playground(8, 8, 30);
+  playground.init();
   playground.addFinish(3, 8);
   gameConsole = new GameConsole();
+  gameConsole.init();
   hero = new Character("main", 3, 1, "images/hero.jpg");
+  hero.init();
   enemies = new Array(new Enemy("zombie_pepa", 1, 2, "images/zombie.gif"), 
                       new Enemy("zombie_ferda", 8, 1, "images/zombie.gif"),
                       new Enemy("zombie_neznabohumil", 8, 7, "images/zombie.gif"),
                       new Enemy("zombie_michael_jackson", 2, 5, "images/zombie.gif"));
+  for (var i = 0; i < enemies.length; i++)
+    enemies[i].init();
+
   barriers = new Array(new Barrier("table", 3, 3, 1, 1, "images/table.gif", false));
+  for (var i = 0; i < barriers.length; i++)
+    barriers[i].init();
 }
 
 window.onload = initGame;
