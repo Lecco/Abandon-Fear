@@ -15,12 +15,21 @@ var Playground = function(sizeX, sizeY, fieldSize)
   this.fieldSize = fieldSize;
   this.finishX = null;
   this.finishY = null;
+  this.board = null;
 
   /**
    * Initialize playground - add playground to document and resize it
    */
   this.init = function()
   {
+    this.board = new Array();
+    for (var i = 0; i < this.sizeY; i++)
+    {
+      this.board[i] = new Array();
+      for (var j = 0; j < this.sizeX; j++)
+        this.board[i][j] = 0;
+    }
+
     document.body.innerHTML = document.body.innerHTML + "<div id='playground'></div>";
     document.getElementById("playground").style.width = (this.sizeX * this.fieldSize) + "px";
     document.getElementById("playground").style.height = (this.sizeY * this.fieldSize) + "px";
@@ -31,6 +40,33 @@ var Playground = function(sizeX, sizeY, fieldSize)
   this.add = function(content)
   {
     document.getElementById("playground").innerHTML = document.getElementById("playground").innerHTML + content;
+  }
+
+  /**
+   * Adds object to array representing playground (for easier detection of collisions etc)
+   */
+  this.addToBoard = function (x, y, sizeX, sizeY)
+  {
+    for (var i = 0; i < sizeY; i++)
+      for (var j = 0; j < sizeX; j++)
+        this.board[y + i - 1][x + j - 1] = 1;
+  }
+
+  /**
+   * Clears whole game console and prints array reprresenting board
+   */
+  this.print = function()
+  {
+    gameConsole.clear();
+    var stringBoard = "";
+    for (var i = 0; i < this.sizeY; i++)
+    {
+      for (var j = 0; j <this.sizeX; j++)
+        stringBoard += "" + this.board[i][j];
+      stringBoard += "<br>";
+    }
+
+    gameConsole.write(stringBoard);
   }
 
   /**
@@ -46,20 +82,14 @@ var Playground = function(sizeX, sizeY, fieldSize)
   /**
    * Returns true if there is any not movable barrier on given coordinates
    */
-  this.getCollision = function(x,y)
+  this.getCollision = function(x, y)
   {
     if (barriers == undefined) return false;
-    for (var i = 0; i < barriers.length; i++)
-    {
-      if (barriers[i].movable == false)
-      {
-        for (var hor = 0; hor < barriers[i].sizeX; hor++)
-          for (var ver = 0; ver < barriers[i].sizeY; ver++)
-            if (x == barriers[i].coordinateX + hor && y == barriers[i].coordinateY + ver)
-              return true;
-      }
-    }
-    return false;
+
+    if (this.board[y - 1][x - 1] == 1)
+      return true;
+    else return false;
+    
   }
 
   /**
@@ -102,6 +132,14 @@ var GameConsole = function()
   this.write = function(text)
   {
     document.getElementById("game_console").innerHTML = text + document.getElementById("game_console").innerHTML;
+  }
+
+  /**
+   * Clears game console - deletes everything in it
+   */
+  this.clear = function()
+  {
+    document.getElementById("game_console").innerHTML = "";
   }
 }
 
@@ -214,6 +252,7 @@ var Enemy = function(name, x, y, picture)
   this.init = function()
   {
     playground.add("<div id='enemy_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+    playground.addToBoard(this.coordinateX, this.coordinateY, 1, 1);
     this.move(this.coordinateX, this.coordinateY);
   }
   /**
@@ -361,6 +400,7 @@ var Barrier = function(name, x, y, sizeX, sizeY, picture, movable)
   this.init = function()
   {
     playground.add("<div id='barrier_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+    playground.addToBoard(this.coordinateX, this.coordinateY, this.sizeX, this.sizeY);
     document.getElementById("barrier_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
     document.getElementById("barrier_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
   }
@@ -427,10 +467,13 @@ function initGame()
   playground = new Playground(8, 8, 30);
   playground.init();
   playground.addFinish(3, 8);
+
   gameConsole = new GameConsole();
   gameConsole.init();
+  
   hero = new Character("main", 3, 1, "images/hero.jpg");
   hero.init();
+  
   enemies = new Array(new Enemy("zombie_pepa", 1, 2, "images/zombie.gif"), 
                       new Enemy("zombie_ferda", 8, 1, "images/zombie.gif"),
                       new Enemy("zombie_neznabohumil", 8, 7, "images/zombie.gif"),
@@ -441,6 +484,8 @@ function initGame()
   barriers = new Array(new Barrier("table", 3, 3, 1, 1, "images/table.gif", false));
   for (var i = 0; i < barriers.length; i++)
     barriers[i].init();
+
+  playground.print();
 }
 
 window.onload = initGame;
