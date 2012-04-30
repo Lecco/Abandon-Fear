@@ -7,7 +7,7 @@ body * {
 }
 
 #playground {
-  background-color:#ffffff;
+  background: #000000 url(../images/background3.png) center center repeat;
 }
 
 #game_console {

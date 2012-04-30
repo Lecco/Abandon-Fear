@@ -5,6 +5,11 @@ var playground,      // object representing playing area
     barriers,        // array of all barriers
     gameConsole;     // game console object (game info)
 
+const DIRECTION_UP = 0;
+const DIRECTION_LEFT = 1;
+const DIRECTION_RIGHT = 2;
+const DIRECTION_DOWN = 3;
+
 /**
  * Constructor for playground variables and functions
  */
@@ -45,11 +50,71 @@ var Playground = function(sizeX, sizeY, fieldSize)
   /**
    * Adds object to array representing playground (for easier detection of collisions etc)
    */
-  this.addToBoard = function (x, y, sizeX, sizeY)
+  this.addToBoard = function(x, y, sizeX, sizeY)
   {
     for (var i = 0; i < sizeY; i++)
       for (var j = 0; j < sizeX; j++)
         this.board[y + i - 1][x + j - 1] = 1;
+  }
+
+  /**
+   * Finds best direction to move if want to get from start coordiniates to end coordinates
+   */
+  this.getPath = function(startX, startY, endX, endY)
+  {
+    // 1.Generate graph:
+    //   - each node will have array with size = 4 (for 4 directions to leave each node)
+    var adjacencyMatrix;
+    var countNodes = this.sizeX * this.sizeY;
+    var countDirections = 4;
+
+    for (var i = 0; i < countNodes; i++)
+    {
+      for (var j = 0; j < countDirections; j++)
+        if (adjacencyMatrix[i][j] != 1)
+          adjacencyMatrix[i][j] = 0;
+      
+      // check way up
+      if (adjacencyMatrix[i][DIRECTION_UP] != 1 && 
+          Math.floor(i / this.sizeX) >= 1 && 
+          this.getCollision(i % this.sizeX + 1, Math.floor(i / this.sizeX)) == false)
+      {
+        adjacencyMatrix[i][DIRECTION_UP] = 1;
+        adjacencyMatrix[i - this.sizeX][DIRECTION_DOWN] = 1;
+      }
+      
+      //check way to left
+      if (adjacencyMatrix[i][DIRECTION_LEFT] != 1 &&
+          i % this.sizeX != 0 && 
+          this.getCollision(i % this.sizeX, Math.floor(i / this.sizeX) + 1) == false)
+      {
+        adjacencyMatrix[i][DIRECTION_LEFT] = 1;
+        adjacencyMatrix[i - 1][DIRECTION_RIGHT] = 1;
+      }
+
+      //check way to right
+      if (adjacencyMatrix[i][DIRECTION_RIGHT] != 1 &&
+          i % this.sizeX == (this.sizeX - 1) && 
+          this.getCollision(i % this.sizeX + 2, Math.floor(i / this.sizeX) + 1) == false)
+      {
+        adjacencyMatrix[i][DIRECTION_RIGHT] = 1;
+        adjacencyMatrix[i + 1][DIRECTION_LEFT] = 1;
+      }
+
+      //check way down
+      if (adjacencyMatrix[i][DIRECTION_DOWN] != 1 &&
+          Math.floor(i / this.sizeX) < this.sizeX && 
+          this.getCollision(i % this.sizeX + 1, Math.floor(i / this.sizeX) + 1) == false)
+      {
+        adjacencyMatrix[i][DIRECTION_DOWN] = 1;
+        adjacencyMatrix[i + this.sizeX][DIRECTION_UP] = 1;
+      }
+
+    }
+
+    
+    // 2.Do breadth-first search (BFS)
+    // 3.Return best direction
   }
 
   /**
@@ -77,6 +142,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
     this.finishX = x;
     this.finishY = y;
     playground.add("<div id='finish'><img src='images/finish.jpg' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px; top:" + (this.fieldSize * (y - 1)) + "px; left: " + (this.fieldSize * (x - 1)) + "px'></div>");
+    playground.addToBoard(x, y, 1, 1);
   }
 
   /**
@@ -169,12 +235,16 @@ var Character = function(name, x, y, picture)
    */
   this.moveLeft = function()
   {
-    if (this.coordinateX > 1)
+    if (this.coordinateX > 1 &&
+        playground.getCollision(this.coordinateX - 1, this.coordinateY) == false)
       this.coordinateX--;
-    if (this.move(this.coordinateX, this.coordinateY))
-      gameConsole.write("You moved left.<br>");
     else
-      this.coordinateX++;
+      this.hadMoved = false;
+    if (this.hadMoved)
+    {
+      this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("You moved left.<br>");
+    }
   }
 
   /**
@@ -182,12 +252,16 @@ var Character = function(name, x, y, picture)
    */
   this.moveUp = function()
   {
-    if (this.coordinateY > 1)
+    if (this.coordinateY > 1 &&
+        playground.getCollision(this.coordinateX, this.coordinateY - 1) == false)
       this.coordinateY--;
-    if (this.move(this.coordinateX, this.coordinateY))
-      gameConsole.write("You moved up.<br>");
     else
-      this.coordinateY++;
+      this.hadMoved = false;
+    if (this.hadMoved)
+    {
+      this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("You moved up.<br>");
+    }
   }
 
   /**
@@ -195,12 +269,16 @@ var Character = function(name, x, y, picture)
    */
   this.moveRight = function()
   {
-    if (this.coordinateX < playground.sizeX)
+    if (this.coordinateX < playground.sizeX &&
+        playground.getCollision(this.coordinateX + 1, this.coordinateY) == false)
       this.coordinateX++;
-    if (this.move(this.coordinateX, this.coordinateY))
-      gameConsole.write("You moved right.<br>");
     else
-      this.coordinateX--;
+      this.hadMoved = false;
+    if (this.hadMoved)
+    {
+      this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("You moved right.<br>");
+    }
   }
 
   /**
@@ -208,12 +286,16 @@ var Character = function(name, x, y, picture)
    */
   this.moveDown = function()
   {
-    if (this.coordinateY < playground.sizeY)
+    if (this.coordinateY < playground.sizeY &&
+        playground.getCollision(this.coordinateX, this.coordinateY + 1) == false)
       this.coordinateY++;
-    if (this.move(this.coordinateX, this.coordinateY))
-      gameConsole.write("You moved down.<br>");
     else
-      this.coordinateY--;
+      this.hadMoved = false;
+    if (this.hadMoved)
+    {
+      this.move(this.coordinateX, this.coordinateY);
+      gameConsole.write("You moved down.<br>");
+    }
   }
 
   /**
@@ -221,18 +303,10 @@ var Character = function(name, x, y, picture)
    */
   this.move = function(x, y)
   {
-    if (playground.getCollision(x, y)) 
-    {
-      // if there is some barrier, we can't move here
-      this.hadMoved = false;
-      return false;
-    }
     document.getElementById("character_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
     document.getElementById("character_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
     this.steps++;
     this.hadMoved = true;
-    return true;
-    //gameConsole.write("This was your " + this.steps + ". move.<br>");
   }
 }
 
@@ -411,6 +485,7 @@ var Barrier = function(name, x, y, sizeX, sizeY, picture, movable)
  */
 function handleKey(e)
 {
+  hero.hadMoved = true;
   switch (e.keyCode)
   {
     case 37:
@@ -431,7 +506,10 @@ function handleKey(e)
   }
 
   // if hero hadn't moved (key was pressed but there might be a barrier) then neither will enemies
-  if (hero.hadMoved == false) return;
+  if (hero.hadMoved == false) 
+  {
+    return;
+  }
 
   for (var i = 0; i < enemies.length; i++)
   {
@@ -471,7 +549,7 @@ function initGame()
   gameConsole = new GameConsole();
   gameConsole.init();
   
-  hero = new Character("main", 3, 1, "images/hero.jpg");
+  hero = new Character("main", 3, 1, "images/hero.png");
   hero.init();
   
   enemies = new Array(new Enemy("zombie_pepa", 1, 2, "images/zombie.gif"), 
