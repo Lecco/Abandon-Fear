@@ -9,6 +9,7 @@ const DIRECTION_UP = 0;
 const DIRECTION_LEFT = 1;
 const DIRECTION_RIGHT = 2;
 const DIRECTION_DOWN = 3;
+const COUNT_DIRECTIONS = 4;
 
 /**
  * Constructor for playground variables and functions
@@ -58,19 +59,16 @@ var Playground = function(sizeX, sizeY, fieldSize)
   }
 
   /**
-   * Finds best direction to move if want to get from start coordiniates to end coordinates
+   * Returns adjacency matrix for current playground
    */
-  this.getPath = function(startX, startY, endX, endY)
+  this.getAdjacencyMatrix = function()
   {
-    // 1.Generate graph:
-    //   - each node will have array with size = 4 (for 4 directions to leave each node)
     var adjacencyMatrix;
     var countNodes = this.sizeX * this.sizeY;
-    var countDirections = 4;
 
     for (var i = 0; i < countNodes; i++)
     {
-      for (var j = 0; j < countDirections; j++)
+      for (var j = 0; j < COUNT_DIRECTIONS; j++)
         if (adjacencyMatrix[i][j] != 1)
           adjacencyMatrix[i][j] = 0;
       
@@ -109,11 +107,39 @@ var Playground = function(sizeX, sizeY, fieldSize)
         adjacencyMatrix[i][DIRECTION_DOWN] = 1;
         adjacencyMatrix[i + this.sizeX][DIRECTION_UP] = 1;
       }
-
     }
+    return adjacencyMatrix;
+  }
 
-    
+  /**
+   * Finds best direction to move if want to get from start coordiniates to end coordinates
+   */
+  this.getDirection = function(startX, startY, endX, endY)
+  {
+    var adjacencyMatrix = this.getAdjacencyMatrix();
+    var found           = false;
+    var stack           = new Array();
+    var fieldIndex      = startY * this.sizeX + startX;
+
     // 2.Do breadth-first search (BFS)
+    stack.push(fieldIndex);
+      
+    while (stack.length > 0)
+    {
+      fieldIndex = stack.pop();
+
+      /*  TODO
+       *  for (v in Adj[u]) {
+       *    if (stav[v] == FRESH) {
+       *      stav[v] = OPEN; d[v] = d[u]+1;
+       *      p[v] = u; Queue.Push(v); 
+       *    }
+       *  }
+       *  stav[u]=CLOSED;
+       */
+    }
+      
+   
     // 3.Return best direction
   }
 
