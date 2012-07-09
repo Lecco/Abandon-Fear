@@ -12,7 +12,11 @@ const DIRECTION_DOWN = 3;
 const COUNT_DIRECTIONS = 4;
 
 /**
- * Constructor for playground variables and functions
+ * Class for playground variables and functions
+ *
+ * @param int sizeX horizontal size
+ * @param int sizeY vertical size
+ * @param int fieldSize size of one field of playground (it is square) [px]
  */
 var Playground = function(sizeX, sizeY, fieldSize)
 {
@@ -42,6 +46,8 @@ var Playground = function(sizeX, sizeY, fieldSize)
   }
   /**
    * Adds a new content to the playground
+   *
+   * @param string content HTML code to add to the playground
    */
   this.add = function(content)
   {
@@ -50,6 +56,11 @@ var Playground = function(sizeX, sizeY, fieldSize)
 
   /**
    * Adds object to array representing playground (for easier detection of collisions etc)
+   *
+   * @param int x coordinate x of the element we want to add
+   * @param int y coordinate y of the element we want to add
+   * @param int sizeX the horizontal size of the element
+   * @param int sizeY the vertical size of the element
    */
   this.addToBoard = function(x, y, sizeX, sizeY)
   {
@@ -60,6 +71,9 @@ var Playground = function(sizeX, sizeY, fieldSize)
 
   /**
    * Returns adjacency matrix for current playground
+   *
+   * @return adjacency matrix representing playground (where player can or can 
+   * not go)
    */
   this.getAdjacencyMatrix = function()
   {
@@ -112,7 +126,16 @@ var Playground = function(sizeX, sizeY, fieldSize)
   }
 
   /**
-   * Finds best direction to move if want to get from start coordiniates to end coordinates
+   * Finds best direction to move if want to get from start coordiniates to 
+   * end coordinates
+   *
+   * @param int startX players starting x position
+   * @param int startY players starting y position
+   * @param int endX x position of field on which we want to go
+   * @param int endY y position of field on which we want to go
+   *
+   * @return number representing the direction to go to get to the ending 
+   * coordinates by the easiest way
    */
   this.getDirection = function(startX, startY, endX, endY)
   {
@@ -120,31 +143,14 @@ var Playground = function(sizeX, sizeY, fieldSize)
     var found           = false;
     var stack           = new Array();
     var fieldIndex      = startY * this.sizeX + startX;
-
-    // 2.Do breadth-first search (BFS)
-    stack.push(fieldIndex);
-      
-    while (stack.length > 0)
-    {
-      fieldIndex = stack.pop();
-
-      /*  TODO
-       *  for (v in Adj[u]) {
-       *    if (stav[v] == FRESH) {
-       *      stav[v] = OPEN; d[v] = d[u]+1;
-       *      p[v] = u; Queue.Push(v); 
-       *    }
-       *  }
-       *  stav[u]=CLOSED;
-       */
-    }
-      
    
+    // TODO - Dijkstra?
+
     // 3.Return best direction
   }
 
   /**
-   * Clears whole game console and prints array reprresenting board
+   * Clears whole game console and prints array representing board
    */
   this.print = function()
   {
@@ -162,17 +168,25 @@ var Playground = function(sizeX, sizeY, fieldSize)
 
   /**
    * Sets position of finish and adds it to playground
+   *
+   * @param int x the x coordinates of the finish in this level
+   * @param int y the y coordinates of the finish in this level
    */
   this.addFinish = function(x, y)
   {
     this.finishX = x;
     this.finishY = y;
     playground.add("<div id='finish'><img src='images/finish.jpg' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px; top:" + (this.fieldSize * (y - 1)) + "px; left: " + (this.fieldSize * (x - 1)) + "px'></div>");
+    // TODO
     //playground.addToBoard(x, y, 1, 1);
   }
 
   /**
    * Returns true if there is any not movable barrier on given coordinates
+   *
+   * @param int x the x coordinates of the field to check
+   * @param int x the y coordinates of the field to check
+   * @return boolean
    */
   this.getCollision = function(x, y)
   {
@@ -181,11 +195,12 @@ var Playground = function(sizeX, sizeY, fieldSize)
     if (this.board[y - 1][x - 1] == 1)
       return true;
     else return false;
-    
   }
 
   /**
-   * Prints the victory message to console and into the playgropund
+   * Prints the victory message to console and into the playground
+   *
+   * @param int steps
    */
   this.victory = function(steps)
   {
@@ -195,13 +210,14 @@ var Playground = function(sizeX, sizeY, fieldSize)
 
   /**
    * Prints the game over message to console and to the playground
+   *
+   * @param int steps
    */
   this.gameOver = function(steps)
   {
     document.getElementById("playground").innerHTML = "<div id='game_over'><a href=''>TRY AGAIN</a></div>";
     gameConsole.write("Game over!<br>");
   }
-
 }
 
 /**
@@ -220,6 +236,8 @@ var GameConsole = function()
 
   /**
    * Writes giver text to the console
+   *
+   * @param string text
    */
   this.write = function(text)
   {
@@ -236,7 +254,12 @@ var GameConsole = function()
 }
 
 /**
- * Constructor for characters like heroes and NPC
+ * Class for characters like heroes and NPC
+ *
+ * @param string name
+ * @param int x
+ * @param int y
+ * @param string picture
  */
 var Character = function(name, x, y, picture)
 {
@@ -337,7 +360,12 @@ var Character = function(name, x, y, picture)
 }
 
 /**
- * Constructor for enemies
+ * Class for enemies
+ *
+ * @param string name
+ * @param int x
+ * @param int y
+ * @param string picture
  */
 var Enemy = function(name, x, y, picture)
 {
@@ -484,7 +512,15 @@ var Enemy = function(name, x, y, picture)
 }
 
 /**
- * Constructor for any obsatcles in the way like tables, barrels
+ * Class for any obsatcles in the way like tables, barrels
+ *
+ * @param string name
+ * @param int x
+ * @param int y
+ * @param int sizeX
+ * @param int sizeY
+ * @param string picture
+ * @param boolean movable
  */
 var Barrier = function(name, x, y, sizeX, sizeY, picture, movable)
 {
@@ -530,10 +566,11 @@ function handleKey(e)
       break;
     default:
       //window.alert(e.keyCode);
+      hero.hadMoved = false;
       break;
   }
 
-  // if hero hadn't moved (key was pressed but there might be a barrier) then neither will enemies
+  // if hero didn't move (key was pressed but there might be a barrier) then neither will enemies
   if (hero.hadMoved == false) 
   {
     return;
@@ -570,24 +607,35 @@ function initGame()
 {
   document.onkeydown = handleKey;
   /* game elements */
-  playground = new Playground(8, 8, 30);
+  playground = new Playground(18, 12, 40);
   playground.init();
-  playground.addFinish(3, 8);
+  playground.addFinish(17, 12);
 
   gameConsole = new GameConsole();
   gameConsole.init();
   
-  hero = new Character("main", 3, 1, "images/hero.png");
+  hero = new Character("main", 13, 1, "images/hero.png");
   hero.init();
+
+  enemies = new Array();
+  for (var i = 0; i < 8; i++)
+  {
+    var newX = Math.round((Math.random() * 1000) % 16) + 1;
+    var newY = Math.round((Math.random() * 1000) % 10) + 1;
+    enemies.push(new Enemy("zombie_" + i, newX, newY, "images/zombie.gif"));
+  }
   
-  enemies = new Array(new Enemy("zombie_pepa", 1, 2, "images/zombie.gif"), 
-                      new Enemy("zombie_ferda", 8, 1, "images/zombie.gif"),
-                      new Enemy("zombie_neznabohumil", 8, 7, "images/zombie.gif"),
-                      new Enemy("zombie_michael_jackson", 2, 5, "images/zombie.gif"));
   for (var i = 0; i < enemies.length; i++)
     enemies[i].init();
 
-  barriers = new Array(new Barrier("table", 3, 3, 1, 1, "images/table.gif", false));
+  barriers = new Array();
+  for (var i = 0; i < 25; i++)
+  {
+    var newX  = Math.round((Math.random() * 1000) % 16) + 1;
+    var newY  = Math.round((Math.random() * 1000) % 10) + 1;
+    barriers.push(new Barrier("table_" + i, newX, newY, 1, 1, "images/table.gif", false));
+  }
+
   for (var i = 0; i < barriers.length; i++)
     barriers[i].init();
 
