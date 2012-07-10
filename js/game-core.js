@@ -632,19 +632,19 @@ function initGame()
     /* game elements */
     playground = new Playground(18, 12, 40);
     playground.init();
-    playground.addFinish(17, 12);
+    playground.addFinish(1, 12);
 
     gameConsole = new GameConsole();
     gameConsole.init();
     
-    hero = new Character("main", 13, 1, "images/hero.png");
+    hero = new Character("main", 18, 1, "images/hero.png");
     hero.init();
 
     enemies = new Array();
     for (var i = 0; i < 8; i++)
     {
-        var newX = Math.round((Math.random() * 1000) % 16) + 1;
-        var newY = Math.round((Math.random() * 1000) % 10) + 1;
+        var newX = Math.round((Math.random() * 1000) % 17) + 1;
+        var newY = Math.round((Math.random() * 1000) % 11) + 1;
         enemies.push(new Enemy("zombie_" + i, newX, newY, "images/zombie.gif"));
     }
     
@@ -652,10 +652,10 @@ function initGame()
         enemies[i].init();
 
     barriers = new Array();
-    for (var i = 0; i < 25; i++)
+    for (var i = 0; i < 50; i++)
     {
-        var newX  = Math.round((Math.random() * 1000) % 16) + 1;
-        var newY  = Math.round((Math.random() * 1000) % 10) + 1;
+        var newX  = Math.round((Math.random() * 1000) % 17) + 1;
+        var newY  = Math.round((Math.random() * 1000) % 11) + 1;
         barriers.push(new Barrier("table_" + i, newX, newY, 1, 1, "images/table.gif", false));
     }
 
