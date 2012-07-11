@@ -1,5 +1,5 @@
 body {
-  background-color:#cccccc;
+  background-color:#000;
 }
 
 body * {
@@ -11,10 +11,16 @@ body * {
 }
 
 #game_console {
-  width:400px;
-  height:150px;
-  border:2px solid #AAAAAA;
-  overflow:auto;
+    background-color: #222;
+    border:2px solid #AAAAAA;
+    position: absolute;
+    top:0px;
+    right: 0px;
+    overflow: auto;
+    width: 250px;
+    height: 95%;
+    color: white;
+    padding:5px;
 }
 
 #victory, #game_over {
@@ -24,3 +30,37 @@ body * {
   color: #FFFFFF;
   font-weight:bold;
 }
+
+#game_over {
+    background-image: url(../images/lebka.jpg);
+    background-repeat: no-repeat;
+}
+
+#game_over a {
+    text-align: center;
+    font-size: 25px;
+    margin-top:240px;
+    margin-left:310px;
+    padding:80px;
+    color:white;
+    background-color: rgba(0,0,0,0.5);
+    border: 1px solid black;
+    border-radius: 50px;
+}
+
+#victory {
+    background: white url(../images/victory.jpg) center center no-repeat;
+}
+
+#victory a {
+    text-align: center;
+    font-size: 22px;
+    margin-top:4px;
+    margin-left:310px;
+    padding:18px 50px;
+    color:black;
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 1px solid black;
+    border-radius: 50px;
+}
+

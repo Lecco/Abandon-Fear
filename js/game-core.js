@@ -177,7 +177,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
     {
         this.finishX = x;
         this.finishY = y;
-        playground.add("<div id='finish'><img src='images/finish.jpg' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px; top:" + (this.fieldSize * (y - 1)) + "px; left: " + (this.fieldSize * (x - 1)) + "px'></div>");
+        playground.add("<div id='finish'><img src='images/portal.gif' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px; top:" + (this.fieldSize * (y - 1)) + "px; left: " + (this.fieldSize * (x - 1)) + "px'></div>");
         // TODO
         //playground.addToBoard(x, y, 1, 1);
     }
@@ -195,7 +195,20 @@ var Playground = function(sizeX, sizeY, fieldSize)
             return false;
 
         if (this.board[y - 1][x - 1] == 1)
+        {
+            // if there is a barrier, find it
+            for (var i = 0; i < barriers.length; i++)
+            {
+                if (barriers[i].coordinateX == x &&
+                    barriers[i].coordinateY == y &&
+                    barriers[i].movable)
+                {
+                    // I like to move it move it
+                    return barriers[i];
+                }
+            }
             return true;
+        }
         else 
             return false;
     }
@@ -207,7 +220,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
     */
     this.victory = function(steps)
     {
-        document.getElementById("playground").innerHTML = "<div id='victory'>YOU HAVE WON<br>You made " + steps + " steps.</div>";
+        document.getElementById("playground").innerHTML = "<div id='victory'><a href=''>YOU HAVE WON<br>You made " + steps + " steps.<br><br>TRY AGAIN</a></div>";
         gameConsole.write("VICTORY!!!<br>");
     }
 
@@ -218,7 +231,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
     */
     this.gameOver = function(steps)
     {
-        document.getElementById("playground").innerHTML = "<div id='game_over'><a href=''>TRY AGAIN</a></div>";
+        document.getElementById("playground").innerHTML = "<div id='game_over'><a href=''>YOU HAVE LOST!<br><br>TRY AGAIN</a></div>";
         gameConsole.write("Game over!<br>");
     }
 }
@@ -234,7 +247,8 @@ var GameConsole = function()
     this.init = function()
     {
         document.body.innerHTML = document.body.innerHTML + "<div id='game_console'></div>";
-        document.getElementById("game_console").style.top = (playground.sizeY * playground.fieldSize) + 20 + "px";
+        //document.getElementById("game_console").style.top = (playground.sizeY * playground.fieldSize) + 20 + "px";
+        document.getElementById("game_console").style.float = "right";
     }
 
     /**
@@ -628,35 +642,53 @@ function handleKey(e)
  */
 function initGame()
 {
+    var playgroundX = 19,
+        playgroundY = 13,
+        playgroundField = 50,
+        barrierSize = 1,
+        finishX = 1,
+        finishY = playgroundY,
+        heroX = playgroundX,
+        heroY = 1,
+        heroImage = "images/hero.png",
+        enemyImages = Array("images/zombie.gif", 
+                            "images/barbar.gif",
+                            "images/weasel.png",
+                            "images/weasel2.png"),
+        enemyCount = 8,
+        barrierCount = 50;
+
     document.onkeydown = handleKey;
     /* game elements */
-    playground = new Playground(18, 12, 40);
+    playground = new Playground(playgroundX, playgroundY, playgroundField);
     playground.init();
-    playground.addFinish(1, 12);
+    playground.addFinish(finishX, finishY);
 
     gameConsole = new GameConsole();
     gameConsole.init();
     
-    hero = new Character("main", 18, 1, "images/hero.png");
+    hero = new Character("main", heroX, heroY, heroImage);
     hero.init();
 
+
     enemies = new Array();
-    for (var i = 0; i < 8; i++)
+    for (var i = 0; i < enemyCount; i++)
     {
-        var newX = Math.round((Math.random() * 1000) % 17) + 1;
-        var newY = Math.round((Math.random() * 1000) % 11) + 1;
-        enemies.push(new Enemy("zombie_" + i, newX, newY, "images/zombie.gif"));
+        var newX = Math.round((Math.random() * 1000) % (playgroundX - 1)) + 1;
+        var newY = Math.round((Math.random() * 1000) % (playgroundY - 1)) + 1;
+        var randomImage = Math.round((Math.random() * 1000)) % enemyImages.length;
+        enemies.push(new Enemy("zombie_" + i, newX, newY, enemyImages[randomImage]));
     }
     
     for (var i = 0; i < enemies.length; i++)
         enemies[i].init();
 
     barriers = new Array();
-    for (var i = 0; i < 50; i++)
+    for (var i = 0; i < barrierCount; i++)
     {
-        var newX  = Math.round((Math.random() * 1000) % 17) + 1;
-        var newY  = Math.round((Math.random() * 1000) % 11) + 1;
-        barriers.push(new Barrier("table_" + i, newX, newY, 1, 1, "images/table.gif", false));
+        var newX  = Math.round((Math.random() * 1000) % (playgroundX - 1)) + 1;
+        var newY  = Math.round((Math.random() * 1000) % (playgroundY - 1)) + 1;
+        barriers.push(new Barrier("table_" + i, newX, newY, barrierSize, barrierSize, "images/table.gif", true));
     }
 
     for (var i = 0; i < barriers.length; i++)
