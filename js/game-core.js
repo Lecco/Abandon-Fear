@@ -655,6 +655,10 @@ function initGame()
                             "images/pikachu.png",
                             "images/weasel.png",
                             "images/weasel2.png"),
+        enemyNames = Array("zombie_",
+                           "pikachu_",
+                           "green_monster_",
+                           "purple_monster_"),
         enemyCount = 8,
         barrierCount = 50;
 
@@ -677,7 +681,7 @@ function initGame()
         var newX = Math.round((Math.random() * 1000) % (playgroundX - 1)) + 1;
         var newY = Math.round((Math.random() * 1000) % (playgroundY - 1)) + 1;
         var randomImage = Math.round((Math.random() * 1000)) % enemyImages.length;
-        enemies.push(new Enemy("zombie_" + i, newX, newY, enemyImages[randomImage]));
+        enemies.push(new Enemy(enemyNames[randomImage] + i, newX, newY, enemyImages[randomImage]));
     }
     
     for (var i = 0; i < enemies.length; i++)
