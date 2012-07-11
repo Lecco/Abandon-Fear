@@ -220,7 +220,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
     */
     this.victory = function(steps)
     {
-        document.getElementById("playground").innerHTML = "<div id='victory'><a href=''>YOU HAVE WON<br>You made " + steps + " steps.<br><br>TRY AGAIN</a></div>";
+        document.getElementById("playground").innerHTML = "<div id='victory'><a href=''>YOU ESCAPED<br>You made " + steps + " steps.<br><br>TRY AGAIN</a></div>";
         gameConsole.write("VICTORY!!!<br>");
     }
 
@@ -652,7 +652,7 @@ function initGame()
         heroY = 1,
         heroImage = "images/hero.png",
         enemyImages = Array("images/zombie.gif", 
-                            "images/barbar.gif",
+                            "images/pikachu.png",
                             "images/weasel.png",
                             "images/weasel2.png"),
         enemyCount = 8,
