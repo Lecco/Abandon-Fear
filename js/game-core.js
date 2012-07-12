@@ -37,7 +37,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
         {
             this.board[i] = new Array();
             for (var j = 0; j < this.sizeX; j++)
-                this.board[i][j] = 0;
+                this.board[i][j] = 2;
         }
 
         document.body.innerHTML = document.body.innerHTML + "<div id='playground'></div>";
@@ -196,6 +196,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
 
         if (this.board[y - 1][x - 1] == 1)
         {
+            /*
             // if there is a barrier, find it
             for (var i = 0; i < barriers.length; i++)
             {
@@ -207,6 +208,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
                     return barriers[i];
                 }
             }
+            */
             return true;
         }
         else 
@@ -415,6 +417,7 @@ var Enemy = function(name, x, y, picture)
         playground.addToBoard(this.coordinateX, this.coordinateY, 1, 1);
         this.move(this.coordinateX, this.coordinateY);
     }
+
     /**
     * Moves left
     */
@@ -476,7 +479,6 @@ var Enemy = function(name, x, y, picture)
     */
     this.chaseHero = function()
     {
-        playground.board[this.coordinateY - 1][this.coordinateX - 1] = 0;
         /*
         * The vector [coefficientX, coefficientY] = [heros coordinates - enemys coordinates]
         * It's the direction from enemy to main character
@@ -654,11 +656,13 @@ function initGame()
         enemyImages = Array("images/zombie.gif", 
                             "images/pikachu.png",
                             "images/weasel.png",
-                            "images/weasel2.png"),
+                            "images/weasel2.png",
+                            "images/blue_monster.png"),
         enemyNames = Array("zombie_",
                            "pikachu_",
                            "green_monster_",
-                           "purple_monster_"),
+                           "purple_monster_",
+                           "blue_monster_"),
         enemyCount = 8,
         barrierCount = 50;
 
