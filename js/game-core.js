@@ -37,7 +37,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
         {
             this.board[i] = new Array();
             for (var j = 0; j < this.sizeX; j++)
-                this.board[i][j] = 2;
+                this.board[i][j] = 0;
         }
 
         document.body.innerHTML = document.body.innerHTML + "<div id='playground'></div>";
@@ -196,6 +196,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
 
         if (this.board[y - 1][x - 1] == 1)
         {
+            console.log(this.board);
             /*
             // if there is a barrier, find it
             for (var i = 0; i < barriers.length; i++)
@@ -414,7 +415,6 @@ var Enemy = function(name, x, y, picture)
     this.init = function()
     {
         playground.add("<div id='enemy_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
-        playground.addToBoard(this.coordinateX, this.coordinateY, 1, 1);
         this.move(this.coordinateX, this.coordinateY);
     }
 
@@ -644,27 +644,34 @@ function handleKey(e)
  */
 function initGame()
 {
-    var playgroundX = 19,
-        playgroundY = 13,
-        playgroundField = 50,
+    var playgroundX = 25,
+        playgroundY = 17,
+        playgroundField = 40,
         barrierSize = 1,
         finishX = 1,
         finishY = playgroundY,
         heroX = playgroundX,
         heroY = 1,
         heroImage = "images/hero.png",
+        /*
         enemyImages = Array("images/zombie.gif", 
                             "images/pikachu.png",
                             "images/weasel.png",
                             "images/weasel2.png",
                             "images/blue_monster.png"),
-        enemyNames = Array("zombie_",
-                           "pikachu_",
-                           "green_monster_",
-                           "purple_monster_",
-                           "blue_monster_"),
-        enemyCount = 8,
-        barrierCount = 50;
+                            */
+        enemyImages = Array("images/enemies/enemy1.gif",
+                            "images/enemies/enemy2.gif",
+                            "images/enemies/enemy3.gif",
+                            "images/enemies/enemy4.gif",
+                            "images/enemies/enemy5.gif",
+                            "images/enemies/enemy7.gif",
+                            "images/enemies/enemy8.gif",
+                            "images/enemies/enemy9.gif"
+                            );
+        enemyNames = Array("enemy_"),
+        enemyCount = 15,
+        barrierCount = 90;
 
     document.onkeydown = handleKey;
     /* game elements */
@@ -678,19 +685,6 @@ function initGame()
     hero = new Character("main", heroX, heroY, heroImage);
     hero.init();
 
-
-    enemies = new Array();
-    for (var i = 0; i < enemyCount; i++)
-    {
-        var newX = Math.round((Math.random() * 1000) % (playgroundX - 1)) + 1;
-        var newY = Math.round((Math.random() * 1000) % (playgroundY - 1)) + 1;
-        var randomImage = Math.round((Math.random() * 1000)) % enemyImages.length;
-        enemies.push(new Enemy(enemyNames[randomImage] + i, newX, newY, enemyImages[randomImage]));
-    }
-    
-    for (var i = 0; i < enemies.length; i++)
-        enemies[i].init();
-
     barriers = new Array();
     for (var i = 0; i < barrierCount; i++)
     {
@@ -702,6 +696,18 @@ function initGame()
     for (var i = 0; i < barriers.length; i++)
         barriers[i].init();
 
+    enemies = new Array();
+    for (var i = 0; i < enemyCount; i++)
+    {
+        var newX = Math.round((Math.random() * 1000) % (playgroundX - 1)) + 1;
+        var newY = Math.round((Math.random() * 1000) % (playgroundY - 1)) + 1;
+        var randomImage = Math.round((Math.random() * 1000)) % enemyImages.length;
+        if (playground.getCollision(newX, newY) == false)
+            enemies.push(new Enemy(enemyNames[randomImage % enemyNames.length] + i, newX, newY, enemyImages[randomImage]));
+    }
+    
+    for (var i = 0; i < enemies.length; i++)
+        enemies[i].init();
     //playground.print();
 }
 
