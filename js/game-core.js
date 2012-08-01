@@ -48,11 +48,17 @@ var Playground = function(sizeX, sizeY, fieldSize)
     /**
     * Adds a new content to the playground
     *
-    * @param string content HTML code to add to the playground
+    * @param string id of the created div
+    * @param string url of image inside the div
+    * @param int top position
+    * @param int left position
+    * @param int x-size of image
+    * @param int y-size of image
     */
-    this.add = function(content)
+    this.add = function(div_id, image_url, top, left, sizeX, sizeY)
     {
-        document.getElementById("playground").innerHTML = document.getElementById("playground").innerHTML + content;
+        document.getElementById("playground").innerHTML = document.getElementById("playground").innerHTML + 
+            "<div id='" + div_id + "'><img  src='" + image_url + "' style='top:" + top + "px;left:" + left + "px;width:" + sizeX + "px;height:" + sizeY + "px'></div>";
     }
 
     /**
@@ -177,7 +183,7 @@ var Playground = function(sizeX, sizeY, fieldSize)
     {
         this.finishX = x;
         this.finishY = y;
-        playground.add("<div id='finish'><img src='images/portal.gif' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px; top:" + (this.fieldSize * (y - 1)) + "px; left: " + (this.fieldSize * (x - 1)) + "px'></div>");
+        playground.add("finish", "images/portal.gif", (this.fieldSize * (y - 1)), (this.fieldSize * (x - 1)), playground.fieldSize, playground.fieldSize);
         // TODO
         //playground.addToBoard(x, y, 1, 1);
     }
@@ -295,7 +301,7 @@ var Character = function(name, x, y, picture)
     */
     this.init = function()
     {
-        playground.add("<div id='character_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+        playground.add("character_" + this.name, this.picture, 0, 0, playground.fieldSize, playground.fieldSize);
         this.move(this.coordinateX, this.coordinateY);
     }
 
@@ -414,7 +420,7 @@ var Enemy = function(name, x, y, picture)
     */
     this.init = function()
     {
-        playground.add("<div id='enemy_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+        playground.add("enemy_" + this.name, this.picture, 0, 0, playground.fieldSize, playground.fieldSize);
         this.move(this.coordinateX, this.coordinateY);
     }
 
@@ -576,7 +582,7 @@ var Barrier = function(name, x, y, sizeX, sizeY, picture, movable)
     */
     this.init = function()
     {
-        playground.add("<div id='barrier_" + this.name + "'><img src='" + this.picture + "' style='width:" + playground.fieldSize + "px;height:" + playground.fieldSize + "px'></div>");
+        playground.add("barrier_" + this.name, this.picture, 0, 0, playground.fieldSize, playground.fieldSize);
         playground.addToBoard(this.coordinateX, this.coordinateY, this.sizeX, this.sizeY);
         document.getElementById("barrier_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
         document.getElementById("barrier_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
@@ -708,7 +714,7 @@ function initGame()
     
     for (var i = 0; i < enemies.length; i++)
         enemies[i].init();
-    //playground.print();
+
 }
 
 window.onload = initGame;
