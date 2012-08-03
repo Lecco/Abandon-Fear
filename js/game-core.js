@@ -303,6 +303,7 @@ var Character = function(name, x, y, picture)
     {
         playground.add("character_" + this.name, this.picture, 0, 0, playground.fieldSize, playground.fieldSize);
         this.move(this.coordinateX, this.coordinateY);
+        document.getElementById("character_main").style['-webkit-transform-origin'] = "20px 20px";
     }
 
     /**
@@ -314,6 +315,7 @@ var Character = function(name, x, y, picture)
             playground.getCollision(this.coordinateX - 1, this.coordinateY) == false)
         {
             this.coordinateX--;
+            document.getElementById("character_" + this.name).style['-webkit-transform'] = "rotate(90deg)";
         }
         else
             this.hadMoved = false;
@@ -334,6 +336,7 @@ var Character = function(name, x, y, picture)
             playground.getCollision(this.coordinateX, this.coordinateY - 1) == false)
         {
             this.coordinateY--;
+            document.getElementById("character_" + this.name).style['-webkit-transform'] = "rotate(180deg)";
         }
         else
             this.hadMoved = false;
@@ -354,6 +357,7 @@ var Character = function(name, x, y, picture)
             playground.getCollision(this.coordinateX + 1, this.coordinateY) == false)
         {
             this.coordinateX++;
+            document.getElementById("character_" + this.name).style['-webkit-transform'] = "rotate(270deg)";
         }
         else
             this.hadMoved = false;
@@ -374,6 +378,7 @@ var Character = function(name, x, y, picture)
             playground.getCollision(this.coordinateX, this.coordinateY + 1) == false)
         {
             this.coordinateY++;
+            document.getElementById("character_" + this.name).style['-webkit-transform'] = "rotate(0deg)";
         }
         else
             this.hadMoved = false;
@@ -650,8 +655,8 @@ function handleKey(e)
  */
 function initGame()
 {
-    var playgroundX = 25,
-        playgroundY = 17,
+    var playgroundX = 21,
+        playgroundY = 15,
         playgroundField = 40,
         barrierSize = 1,
         finishX = 1,
@@ -659,13 +664,6 @@ function initGame()
         heroX = playgroundX,
         heroY = 1,
         heroImage = "images/hero.png",
-        /*
-        enemyImages = Array("images/zombie.gif", 
-                            "images/pikachu.png",
-                            "images/weasel.png",
-                            "images/weasel2.png",
-                            "images/blue_monster.png"),
-                            */
         enemyImages = Array("images/enemies/enemy1.gif",
                             "images/enemies/enemy2.gif",
                             "images/enemies/enemy3.gif",
@@ -691,6 +689,7 @@ function initGame()
     hero = new Character("main", heroX, heroY, heroImage);
     hero.init();
 
+
     barriers = new Array();
     for (var i = 0; i < barrierCount; i++)
     {
@@ -703,6 +702,7 @@ function initGame()
         barriers[i].init();
 
     enemies = new Array();
+    
     for (var i = 0; i < enemyCount; i++)
     {
         var newX = Math.round((Math.random() * 1000) % (playgroundX - 1)) + 1;
