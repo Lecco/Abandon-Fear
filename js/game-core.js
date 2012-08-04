@@ -303,7 +303,7 @@ var Character = function(name, x, y, picture)
     {
         playground.add("character_" + this.name, this.picture, 0, 0, playground.fieldSize, playground.fieldSize);
         this.move(this.coordinateX, this.coordinateY);
-        document.getElementById("character_main").style['-webkit-transform-origin'] = "20px 20px";
+        document.getElementById("character_" + this.name).style['-webkit-transform-origin'] = "20px 20px";
     }
 
     /**
@@ -427,6 +427,7 @@ var Enemy = function(name, x, y, picture)
     {
         playground.add("enemy_" + this.name, this.picture, 0, 0, playground.fieldSize, playground.fieldSize);
         this.move(this.coordinateX, this.coordinateY);
+        document.getElementById("enemy_" + this.name).style['-webkit-transform-origin'] = "20px 20px";
     }
 
     /**
@@ -439,6 +440,7 @@ var Enemy = function(name, x, y, picture)
         {
             gameConsole.write("Enemy " + this.name + " moved left.<br>");
             this.coordinateX--;
+            document.getElementById("enemy_" + this.name).style['-webkit-transform'] = "rotate(90deg)";
         }
         this.move(this.coordinateX, this.coordinateY);
     }
@@ -453,6 +455,7 @@ var Enemy = function(name, x, y, picture)
         {
             gameConsole.write("Enemy " + this.name + " moved up.<br>");
             this.coordinateY--;
+            document.getElementById("enemy_" + this.name).style['-webkit-transform'] = "rotate(180deg)";
         }
         this.move(this.coordinateX, this.coordinateY);
     }
@@ -467,6 +470,7 @@ var Enemy = function(name, x, y, picture)
         {
             gameConsole.write("Enemy " + this.name + " moved right.<br>");
             this.coordinateX++;
+            document.getElementById("enemy_" + this.name).style['-webkit-transform'] = "rotate(270deg)";
         }
         this.move(this.coordinateX, this.coordinateY);
     }
@@ -481,6 +485,7 @@ var Enemy = function(name, x, y, picture)
         {
             gameConsole.write("Enemy " + this.name + " moved down.<br>");
             this.coordinateY++;
+            document.getElementById("enemy_" + this.name).style['-webkit-transform'] = "rotate(0deg)";
         }
         this.move(this.coordinateX, this.coordinateY);
     }
