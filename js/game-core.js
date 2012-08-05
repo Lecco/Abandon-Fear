@@ -255,7 +255,7 @@ var GameConsole = function()
     */
     this.init = function()
     {
-        document.body.innerHTML = document.body.innerHTML + "<div id='game_console'></div>";
+        document.body.innerHTML = document.body.innerHTML + "<div id='game_console'></div><div id='steps_count'></div>";
         //document.getElementById("game_console").style.top = (playground.sizeY * playground.fieldSize) + 20 + "px";
         document.getElementById("game_console").style.float = "right";
     }
@@ -293,7 +293,7 @@ var Character = function(name, x, y, picture)
     this.coordinateX = x;
     this.coordinateY = y;
     this.picture = picture;
-    this.steps = 0;
+    this.steps = -1;
     this.hadMoved = true;
 
     /**
@@ -391,6 +391,16 @@ var Character = function(name, x, y, picture)
     }
 
     /**
+     *
+     */
+    this.teleport = function()
+    {
+        this.coordinateX = 2;
+        this.coordinateY = playground.sizeY - 1;
+        this.move(1,1);
+    }
+
+    /**
     * Moves to given coordinates
     *
     * @param int x coordinate x
@@ -401,6 +411,7 @@ var Character = function(name, x, y, picture)
         document.getElementById("character_" + this.name).style.left = ((this.coordinateX - 1) * playground.fieldSize) + "px";
         document.getElementById("character_" + this.name).style.top = ((this.coordinateY - 1) * playground.fieldSize) + "px";
         this.steps++;
+        document.getElementById("steps_count").innerHTML = "Steps: " + this.steps;
         this.hadMoved = true;
     }
 }
@@ -619,6 +630,9 @@ function handleKey(e)
         case 40:
             hero.moveDown();
             break;
+        case 84:
+            hero.teleport();
+            break;
         default:
             //window.alert(e.keyCode);
             hero.hadMoved = false;
@@ -680,7 +694,7 @@ function initGame()
                             );
         enemyNames = Array("enemy_"),
         enemyCount = 15,
-        barrierCount = 90;
+        barrierCount = 80;
 
     document.onkeydown = handleKey;
     /* game elements */
@@ -698,8 +712,8 @@ function initGame()
     barriers = new Array();
     for (var i = 0; i < barrierCount; i++)
     {
-        var newX  = Math.round((Math.random() * 1000) % (playgroundX - 1)) + 1;
-        var newY  = Math.round((Math.random() * 1000) % (playgroundY - 1)) + 1;
+        var newX  = Math.round((Math.random() * 1000) % (playgroundX - 2)) + 1;
+        var newY  = Math.round((Math.random() * 1000) % (playgroundY - 2)) + 1;
         barriers.push(new Barrier("table_" + i, newX, newY, barrierSize, barrierSize, "images/table.gif", true));
     }
 

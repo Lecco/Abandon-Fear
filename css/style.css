@@ -16,11 +16,27 @@ body * {
     position: absolute;
     top:0px;
     right: 0px;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     width: 250px;
-    height: 95%;
+    height: 93%;
     color: white;
     padding:5px;
+}
+
+#steps_count {
+    background-color: #333;
+    border:2px solid #AAAAAA;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    overflow: auto;
+    width: 250px;
+    height: 3%;
+    color: white;
+    padding:5px;
+    text-align:center;
+    color:red;
 }
 
 #victory, #game_over {
